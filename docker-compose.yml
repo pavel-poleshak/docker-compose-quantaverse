@@ -1,0 +1,37 @@
+version: '3'
+services:
+  nodejs:
+    container_name: nodejs
+    build: ./nodejs/.
+    volumes:
+      - /home/pavel/projects/quantaverse/qvwebapp:/home
+    ports:
+      - 8080:8080
+    tty: true
+  postgres:
+    image: postgres:11
+    container_name: postgres
+    volumes:
+      - ./shared/postgres:/var/lib/postgresql/data
+      - ../dumps:/dumps
+    ports:
+      - 5432:5432
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - 6379:6379
+  qvuantaverse:
+    build: .
+    container_name: qv
+    depends_on:
+      - nodejs
+      - postgres
+      - redis
+    tty: true
+    volumes: 
+      - /home/pavel/projects/quantaverse/qvwebapp:/app # change to your work dir.
+      - ~/.ssh/:/home/app/.ssh/:ro
+    ports:
+      - "3000:3000"
+      - "9991:9991"
